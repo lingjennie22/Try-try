@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import textwrap
 
 # 1. Page Configuration & Theme
 st.set_page_config(
@@ -9,12 +10,26 @@ st.set_page_config(
 )
 
 # Custom colorful styling for 11-year-olds
-st.markdown("""
+custom_css = textwrap.dedent("""
     <style>
-    .main-title { font-size: 40px; font-weight: bold; color: #4A90E2; text-align: center; }
-    .score-box { background-color: #F0F2F6; padding: 10px; border-radius: 10px; text-align: center; font-size: 20px; font-weight: bold; }
+    .main-title { 
+        font-size: 40px; 
+        font-weight: bold; 
+        color: #4A90E2; 
+        text-align: center; 
+    }
+    .score-box { 
+        background-color: #F0F2F6; 
+        padding: 10px; 
+        border-radius: 10px; 
+        text-align: center; 
+        font-size: 20px; 
+        font-weight: bold; 
+    }
     </style>
-""", unsafe_html=True)
+""")
+
+st.markdown(custom_css, unsafe_html=True)
 
 # 2. Game Data (Scenarios, Options, Correct Answers, and Explanations)
 SCENARIOS = [
@@ -71,66 +86,4 @@ if "feedback" not in st.session_state:
 def next_question():
     st.session_state.answered = False
     st.session_state.feedback = None
-    remaining_scenarios = [s for s in SCENARIOS if s["id"] != st.session_state.current_question["id"]]
-    if remaining_scenarios:
-        st.session_state.current_question = random.choice(remaining_scenarios)
-    else:
-        st.session_state.current_question = random.choice(SCENARIOS)
-
-# 4. App UI Layout
-st.markdown("<div class='main-title'>🧩 Emotion Explorer: The Game!</div>", unsafe_html=True)
-st.write("Welcome! Read the scenario, match it to the right emotion, and learn cool tricks to manage your feelings!")
-
-st.write("---")
-
-# Display Scoreboard
-col1, col2 = st.columns([3, 1])
-with col2:
-    st.markdown(f"<div class='score-box'>⭐ Score: {st.session_state.score}</div>", unsafe_html=True)
-
-# Display Current Scenario
-with col1:
-    st.subheader("🕵️‍♂️ The Situation:")
-    st.info(st.session_state.current_question["situation"])
-
-# Interactive Choice Form
-st.subheader("Choose the matching emotion:")
-
-# Using a form prevents the page from auto-reloading before the user submits
-with st.form(key="quiz_form"):
-    user_choice = st.radio(
-        "How would you most likely feel?", 
-        options=st.session_state.current_question["options"],
-        index=None, # Starts with no pre-selected option
-        placeholder="Select an emotion..."
-    )
-    submit_button = st.form_submit_button(label="Submit Answer")
-
-# 5. Answer Validation & Logic
-if submit_button:
-    if user_choice is None:
-        st.warning("Please select an option before submitting!")
-    elif not st.session_state.answered:
-        st.session_state.answered = True
-        st.session_state.total_questions += 1
-        
-        if user_choice == st.session_state.current_question["correct"]:
-            st.session_state.score += 1
-            st.session_state.feedback = {"type": "success", "msg": "🎉 Correct! Great job identifying that emotion!"}
-        else:
-            st.session_state.feedback = {"type": "error", "msg": f"❌ Not quite! The closest emotion is **{st.session_state.current_question['correct']}**."}
-
-# Render Feedback and Explanation
-if st.session_state.feedback:
-    if st.session_state.feedback["type"] == "success":
-        st.success(st.session_state.feedback["msg"])
-    else:
-        st.error(st.session_state.feedback["msg"])
-    
-    # Simple, kid-friendly coping mechanism breakdown
-    st.markdown("### 💡 Regulation Tip:")
-    st.write(st.session_state.current_question["explanation"])
-
-# Next Question Button
-if st.session_state.answered:
-    st.button("Next Scenario ➡️", on_click=next_question)
+    remaining_
